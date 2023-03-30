@@ -129,6 +129,27 @@ class Updater:
             DownloadError: Download of a metadata file failed in some way
         """
 
+        if self.config.lazy_refresh:
+            try:
+                # Try loading only local data
+                data = self._load_local_metadata(Timestamp.type)
+                self._trusted_set.update_timestamp(data)
+                data = self._load_local_metadata(Snapshot.type)
+                self._trusted_set.update_snapshot(data, trusted=True)
+                data = self._load_local_metadata(Targets.type)
+                self._trusted_set.update_delegated_targets(
+                    data, Targets.type, Root.type
+                )
+                return
+            except (OSError, exceptions.RepositoryError):
+                # Failed: couldn't load local data in offline mode, hard error
+                if self.config.offline:
+                    raise exceptions.ExpiredMetadataError("couldn't load local data in offline mode, hard error")
+                # Failed: reset _trusted_set, continue with vanilla refresh
+                data = self._load_local_metadata(Root.type)
+                self._trusted_set = TrustedMetadataSet(data)
+
+
         self._load_root()
         self._load_timestamp()
         self._load_snapshot()

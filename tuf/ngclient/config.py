@@ -33,3 +33,5 @@ class UpdaterConfig:
     snapshot_max_length: int = 2000000  # bytes
     targets_max_length: int = 5000000  # bytes
     prefix_targets_with_hash: bool = True
+    lazy_refresh: bool = False
+    offline: bool = False
