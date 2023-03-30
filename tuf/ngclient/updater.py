@@ -54,6 +54,7 @@ from tuf.api.metadata import (
     Timestamp,
 )
 from tuf.ngclient._internal import requests_fetcher, trusted_metadata_set
+from tuf.ngclient._internal.trusted_metadata_set import TrustedMetadataSet
 from tuf.ngclient.config import UpdaterConfig
 from tuf.ngclient.fetcher import FetcherInterface
 
