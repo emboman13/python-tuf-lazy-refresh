@@ -138,8 +138,6 @@ class Updater:
                 data = self._load_local_metadata(Snapshot.type)
                 self._trusted_set.update_snapshot(data, trusted=True)
                 data = self._load_local_metadata(Targets.type)
-                data = self._load_local_metadata(Root.type)
-                self._trusted_set = TrustedMetadataSet(data)
                 self._trusted_set.update_delegated_targets(
                     data, Targets.type, Root.type
                 )
@@ -149,32 +147,14 @@ class Updater:
                     raise exceptions.ExpiredMetadataError("TUF Metadata file has expired.\
                         Will not attempt to load from remote because you are in offline mode")
                 else:
-                    self._load_root()
-                    self._load_timestamp()
-                    self._load_snapshot()
-                    self._load_targets(Targets.type, Root.type)
-                    
-        # if self.config.lazy_refresh:
-        #     try:
-        #         # Try loading only local data
-        #         data = self._load_local_metadata(Timestamp.type)
-        #         self._trusted_set.update_timestamp(data)
-        #         data = self._load_local_metadata(Snapshot.type)
-        #         self._trusted_set.update_snapshot(data, trusted=True)
-        #         data = self._load_local_metadata(Targets.type)
-        #         self._trusted_set.update_delegated_targets(
-        #             data, Targets.type, Root.type
-        #         )
-        #         return
-        #     except (OSError, exceptions.RepositoryError):
-        #         # Failed: couldn't load local data in offline mode, hard error
-        #         if self.config.offline:
-        #             raise exceptions.ExpiredMetadataError("couldn't load local data in offline mode, hard error")
-        #         # Failed: reset _trusted_set, continue with vanilla refresh
-        #         data = self._load_local_metadata(Root.type)
-        #         self._trusted_set = TrustedMetadataSet(data)
-
-
+                    data = self._load_local_metadata(Root.type)
+                    self._trusted_set = TrustedMetadataSet(data)
+                
+        self._load_root()
+        self._load_timestamp()
+        self._load_snapshot()
+        self._load_targets(Targets.type, Root.type)
+                
     def _generate_target_file_path(self, targetinfo: TargetFile) -> str:
         if self.target_dir is None:
             raise ValueError("target_dir must be set if filepath is not given")
